@@ -1,0 +1,14 @@
+{
+  "name": "crm-implementaciones",
+  "version": "1.0.0",
+  "description": "CRM de gestión de implementaciones",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

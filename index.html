@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imple Frigo</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/src/css/styles.css">
+</head>
+<body>
+
+  <!-- PANTALLA DE INGRESO (LOGIN) - página completa -->
+  <div id="login-screen">
+    <div class="login-page-left">
+      <div class="login-brand">
+        <div class="login-brand-icon">
+          <i class="fa-solid fa-circle-nodes"></i>
+        </div>
+        <div>
+          <h1 class="login-brand-title">Implementaciones</h1>
+          <p class="login-brand-sub">Panel de Gestión y Control</p>
+        </div>
+      </div>
+      <div class="login-page-stats">
+        <div class="login-stat-item"><i class="fa-solid fa-building"></i><span id="login-stat-clientes">—</span><small>Implementaciones</small></div>
+        <div class="login-stat-item"><i class="fa-solid fa-circle-check"></i><span id="login-stat-iniciadas">—</span><small>Iniciadas</small></div>
+        <div class="login-stat-item"><i class="fa-solid fa-users"></i><span id="login-stat-usuarios">—</span><small>Implementadores</small></div>
+      </div>
+    </div>
+    <div class="login-page-right">
+      <div class="login-form-container">
+        <h2 class="login-form-title">Bienvenido</h2>
+        <p class="login-form-sub">Ingresá con tu usuario y contraseña</p>
+
+        <div class="login-error" id="login-error"></div>
+
+        <div class="login-field">
+          <label class="login-label">Usuario</label>
+          <input class="login-input" type="text" id="login-user" placeholder="Tu usuario..."
+            oninput="onLoginUserChange()"
+            onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()"
+            autocomplete="username">
+        </div>
+
+        <div class="login-field">
+          <label class="login-label">Contraseña</label>
+          <div class="input-password-wrapper">
+            <input class="login-input" type="password" id="login-pass" placeholder="••••••••"
+              onkeydown="if(event.key==='Enter')doLogin()"
+              autocomplete="current-password">
+            <button type="button" class="btn-toggle-password" onclick="toggleLoginPassword()">
+              <i class="fa-solid fa-eye" id="toggle-pw-icon"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" class="login-btn" onclick="doLogin()" id="login-btn">
+          <span>Ingresar</span>
+          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        </button>
+
+        <p class="login-footer-note">
+          <i class="fa-solid fa-lock" style="margin-right:5px;opacity:0.4;font-size:10px;"></i>
+          Acceso restringido al equipo de Implementaciones
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTERFAZ PRINCIPAL (LAYOUT) -->
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-box">
+          <i class="fa-solid fa-circle-nodes"></i>
+        </div>
+        <div class="logo-text">
+          <h2>Imple Frigo</h2>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <button class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard</span>
+          <span id="dashboard-notif-badge" class="nav-badge" style="display: none;"></span>
+        </button>
+        <button class="nav-item" onclick="showPage('clientes')" id="nav-clientes">
+          <i class="fa-solid fa-briefcase"></i>
+          <span>Clientes</span>
+        </button>
+        <button class="nav-item" onclick="showPage('seguimiento')" id="nav-seguimiento">
+          <i class="fa-solid fa-list-check"></i>
+          <span>Seguimiento</span>
+        </button>
+        <button class="nav-item" onclick="showPage('tareas')" id="nav-tareas">
+          <i class="fa-solid fa-list-check"></i>
+          <span>Tareas</span>
+        </button>
+        <button class="nav-item" onclick="showPage('midia')" id="nav-midia">
+          <i class="fa-solid fa-bolt"></i>
+          <span>Mi Día</span>
+        </button>
+        <button class="nav-item" onclick="showPage('calendario')" id="nav-calendario">
+          <i class="fa-solid fa-calendar-days"></i>
+          <span>Calendario</span>
+        </button>
+        <button class="nav-item" onclick="showPage('notificaciones')" id="nav-notificaciones">
+          <i class="fa-solid fa-bell"></i>
+          <span>Notificaciones</span>
+          <span id="notif-bell-badge" class="nav-badge" style="display: none; background: var(--red-text) !important; color: white !important; box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3);"></span>
+        </button>
+        <button class="nav-item leader-only" onclick="showPage('kanban')" id="nav-kanban">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Tablero Kanban</span>
+        </button>
+        <button class="nav-item leader-only" onclick="showPage('equipo')" id="nav-equipo">
+          <i class="fa-solid fa-user-group"></i>
+          <span>Equipo y Cuentas</span>
+        </button>
+      </nav>
+      
+      <div class="user-chip" id="user-chip">
+        <div class="user-chip-avatar" id="user-avatar">?</div>
+        <div class="user-chip-info">
+          <div class="user-chip-name" id="user-name-label">—</div>
+          <div class="user-chip-role" id="user-role-label">—</div>
+        </div>
+        <button class="logout-btn" onclick="doLogout()" title="Cerrar sesión">
+          <i class="fa-solid fa-power-off"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="main">
+      
+      <!-- DASHBOARD -->
+      <div id="page-dashboard" class="page active">
+        <div class="topbar">
+          <div class="topbar-title">
+            <h2>Panel General</h2>
+            <p>Estado general de las implementaciones</p>
+          </div>
+          <div class="topbar-actions">
+            <button class="btn btn-primary leader-only" onclick="openAddModal()">
+              <i class="fa-solid fa-plus"></i>
+              <span>Nuevo Cliente</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Metrics Container -->
+        <div class="metrics" id="metrics-cards"></div>
+        
+        <!-- Pending Authorizations Container -->
+        <div id="pending-authorizations-section" class="leader-only" style="margin-bottom: 24px;"></div>
+        
+        <div class="dashboard-grid-two-col">
+          <!-- Clientes Iniciados -->
+          <div class="card-wrap">
+            <div class="card-header" style="flex-direction: row; justify-content: space-between; align-items: center;">
+              <div>
+                <div class="header-title">
+                  <i class="fa-solid fa-circle-check text-green-icon"></i>
+                  <h3>Clientes Iniciados</h3>
+                </div>
+                <span class="header-subtitle">Procesos activos completados</span>
+              </div>
+              <label class="support-toggle-label" style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); cursor: pointer; user-select: none;">
+                <input type="checkbox" id="show-support-checkbox" onchange="window.toggleShowSupport(this.checked)" style="cursor: pointer; accent-color: var(--primary);">
+                <span>Ver pasados a soporte</span>
+              </label>
+            </div>
+            <div class="table-container">
+              <table class="dashboard-table">
+                <thead>
+                  <tr>
+                    <th>Cliente / Asignado</th>
+                    <th>Estado actual</th>
+                    <th class="text-right">Transcurrido</th>
+                  </tr>
+                </thead>
+                <tbody id="iniciados-list"></tbody>
+              </table>
+            </div>
+          </div>
+          
+          <!-- Otros Clientes -->
+          <div class="card-wrap">
+            <div class="card-header">
+              <div class="header-title">
+                <i class="fa-solid fa-spinner text-primary-icon"></i>
+                <h3>En Proceso / Pendientes</h3>
+              </div>
+              <span class="header-subtitle">Otros estados e implementaciones</span>
+            </div>
+            <div class="table-container">
+              <table class="dashboard-table">
+                <thead>
+                  <tr>
+                    <th>Cliente / Asignado</th>
+                    <th>Estado actual</th>
+                    <th class="text-right">Días</th>
+                  </tr>
+                </thead>
+                <tbody id="proceso-list"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-chart-row" style="margin-top: 24px;">
+          <!-- Clientes Por Estado -->
+          <div class="card-wrap">
+            <div class="card-header">
+              <div class="header-title">
+                <i class="fa-solid fa-chart-simple text-primary-icon"></i>
+                <h3>Implementaciones por Estado</h3>
+              </div>
+              <span class="header-subtitle">Distribución del embudo</span>
+            </div>
+            <div class="card-body" id="estado-bars"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLIENTES -->
+      <div id="page-clientes" class="page">
+        <div class="topbar">
+          <div class="topbar-title">
+            <h2>Lista de Clientes</h2>
+            <p>Búsqueda y filtros rápidos de clientes en cartera</p>
+          </div>
+          <div class="topbar-actions">
+            <button class="btn btn-secondary leader-only" onclick="window.exportToCSV()" title="Exportar todas las implementaciones a CSV (Excel)">
+              <i class="fa-solid fa-file-arrow-down"></i>
+              <span>Exportar CSV</span>
+            </button>
+            <button class="btn btn-primary leader-only" onclick="openAddModal()">
+              <i class="fa-solid fa-plus"></i>
+              <span>Nuevo Cliente</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="filters-bar">
+          <div class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input class="filter-input" type="text" placeholder="Buscar por nombre o nota..." id="search-input" oninput="renderTable()">
+          </div>
+          <div class="filters-group">
+            <div class="select-wrapper">
+              <select class="filter-select" id="filter-estado" onchange="renderTable()">
+                <option value="">Todos los estados</option>
+                <option value="Solicitar Info">Solicitar Info</option>
+                <option value="Armado de Base">Armado de Base</option>
+                <option value="Instalacion">Instalación</option>
+                <option value="Capacitacion">Capacitación</option>
+                <option value="Iniciado">Iniciado</option>
+              </select>
+              <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+            
+            <div class="select-wrapper">
+              <select class="filter-select" id="filter-tipo" onchange="renderTable()">
+                <option value="">Todos los tipos</option>
+                <option value="Frigo">Frigo</option>
+                <option value="Ciclo II">Ciclo II</option>
+                <option value="Carniceria">Carnicería</option>
+                <option value="Usuario">Usuario</option>
+                <option value="Admin">Admin</option>
+                <option value="Frigo + Carni">Frigo + Carni</option>
+                <option value="Ciclo II + Carni">Ciclo II + Carni</option>
+                <option value="Todo">Todo</option>
+              </select>
+              <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+            
+            <div class="select-wrapper">
+              <select class="filter-select" id="filter-asignado" onchange="renderTable()">
+                <option value="">Todos los asignados</option>
+                <!-- Opciones se renderizarán dinámicamente -->
+              </select>
+              <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="table-wrap">
+          <table class="main-table">
+             <thead id="clients-thead">
+               <tr>
+                 <th class="col-checkbox leader-only" style="width: 40px; text-align: center;">
+                   <input type="checkbox" id="select-all-clients" onchange="window.toggleSelectAllClients(this.checked)">
+                 </th>
+                 <th>Nombre del Cliente / Notas</th>
+                 <th>Tipo de Servicio</th>
+                 <th>Responsable Asignado</th>
+                 <th>Estado del Embudo</th>
+                 <th>Arranque</th>
+                 <th class="text-right">Días Restantes</th>
+                 <th class="col-actions leader-only" style="width: 90px; text-align: center;">Acciones</th>
+               </tr>
+             </thead>
+            <tbody id="clients-tbody"></tbody>
+          </table>
+        </div>
+        
+      </div>
+
+      <!-- SEGUIMIENTO DE AVANCE -->
+      <div id="page-seguimiento" class="page">
+        <div class="topbar">
+          <div class="topbar-title">
+            <h2>Seguimiento de Avance</h2>
+            <p>Control visual de etapas, porcentaje de avance y alertas de desvíos críticos</p>
+          </div>
+        </div>
+
+        <!-- Metric summary boxes (filled by JS) -->
+        <div class="seguimiento-stats-banner" id="seguimiento-stats-banner">
+          <!-- Tarjetas de estadísticas inyectadas dinámicamente -->
+        </div>
+
+        <!-- Active Implementations Tracker List -->
+        <div class="seguimiento-list-container" id="seguimiento-list-container">
+          <!-- Tarjetas de progreso inyectadas dinámicamente -->
+        </div>
+      </div>
+
+      <!-- CALENDARIO -->
+      <div id="page-calendario" class="page">
+        <div class="topbar">
+          <div class="topbar-title">
+            <h2>Calendario de Actividades</h2>
+            <p>Visualización mensual de arranques y tareas programadas</p>
+          </div>
+        </div>
+
+        <div class="filters-bar" style="margin-bottom: 20px;">
+          <div class="filters-group" style="width: 100%; justify-content: flex-start; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">Filtrar Cliente:</label>
+              <div class="select-wrapper" style="width: 220px;">
+                <select class="filter-select" id="filter-calendar-cliente" onchange="window.renderCalendar()">
+                  <option value="">Todos los clientes</option>
+                  <!-- Se cargan dinámicamente -->
+                </select>
+                <i class="fa-solid fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">Filtrar Asignado:</label>
+              <div class="select-wrapper" style="width: 200px;">
+                <select class="filter-select" id="filter-calendar-asignado" onchange="window.renderCalendar()">
+                  <option value="">Todos los asignados</option>
+                  <!-- Se cargan dinámicamente -->
+                </select>
+                <i class="fa-solid fa-chevron-down select-arrow"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-wrap" style="padding: 24px; overflow-x: auto;">
+          <!-- Calendar Controls -->
+          <div class="calendar-controls">
+            <div class="calendar-nav-buttons">
+              <button class="btn btn-secondary btn-sm" onclick="window.calendarPrevMonth()" title="Mes anterior">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="window.calendarToday()">Hoy</button>
+              <button class="btn btn-secondary btn-sm" onclick="window.calendarNextMonth()" title="Mes siguiente">
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+            <h3 id="calendar-month-year-title" class="calendar-title">Mes Año</h3>
+          </div>
+
+          <!-- Calendar Table / Grid Grid -->
+          <div class="calendar-grid-container">
+            <div class="calendar-weekdays">
+              <div class="weekday">Lun</div>
+              <div class="weekday">Mar</div>
+              <div class="weekday">Mié</div>
+              <div class="weekday">Jue</div>
+              <div class="weekday">Vie</div>
+              <div class="weekday">Sáb</div>
+              <div class="weekday">Dom</div>
+            </div>
+            <div class="calendar-days-grid" id="calendar-days-grid">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTIFICACIONES -->
+      <div id="page-notificaciones" class="page">
+        <div class="topbar">
+          <div class="topbar-title">
+            <h2>Centro de Actividad</h2>
+            <p>Historial de cambios y actividad de otros usuarios en tus clientes asignados</p>
+          </div>
+          <div class="topbar-actions">
+            <button class="btn btn-secondary" onclick="window.clearNotificationsHistory()">
+              <i class="fa-solid fa-broom"></i>
+              <span>Limpiar Historial</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="card-wrap" style="padding: 24px;">
+          <div id="notif-filter-bar" style="display:none; align-items:center; gap:12px; padding:12px 16px; background:var(--surface); border:1px solid var(--border); border-radius:10px; margin-bottom:16px;"></div>
+          <div id="notificaciones-list" class="activity-log-container">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- TAREAS -->
+      <div id="page-tareas" class="page">
+        <div class="topbar">
+          <div class="topbar-title">
+            <h2>Tareas del equipo</h2>
+            <p>Asigná y hacé seguimiento de tareas para cada implementador</p>
+          </div>
+        </div>
+        <div id="tareas-container" style="padding: 0 28px 40px;"></div>
+      </div>
+
+      <!-- MI DÍA -->
+      <div id="page-midia" class="page">
+        <div class="topbar">
+          <div class="topbar-title">
+            <h2>Mi Día</h2>
+            <p>Registrá las acciones realizadas hoy en cada implementación</p>
+          </div>
+        </div>
+        <div id="midia-container" style="padding: 0 28px 40px;"></div>
+      </div>
+
+      <!-- KANBAN -->
+      <div id="page-kanban" class="page">
+        <div class="topbar">
+          <div class="topbar-title">
+            <h2>Tablero Kanban</h2>
+            <p>Organiza visualmente por estado o por responsable asignado</p>
+          </div>
+          <div class="topbar-actions">
+            <div class="toggle-buttons-group">
+              <button id="kanban-toggle-estado" class="btn btn-primary active" onclick="window.setKanbanGroupBy('estado')">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Por Estado</span>
+              </button>
+              <button id="kanban-toggle-asignado" class="btn btn-secondary" onclick="window.setKanbanGroupBy('asignado')">
+                <i class="fa-solid fa-users"></i>
+                <span>Por Asignado</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="kanban-board-wrapper">
+          <div class="kanban" id="kanban-board"></div>
+        </div>
+      </div>
+
+      <!-- EQUIPO -->
+      <div id="page-equipo" class="page">
+        <div class="topbar">
+          <div class="topbar-title">
+            <h2>Equipo de Trabajo</h2>
+            <p>Distribución de carga de implementadores y gestión de accesos</p>
+          </div>
+        </div>
+        <div class="team-grid" id="team-grid"></div>
+      </div>
+
+      <!-- DETALLE CLIENTE -->
+      <div id="page-cliente" class="page">
+        <div id="client-hero-area"></div>
+        <div class="client-edit-bar" id="client-edit-bar"></div>
+        <div class="client-body" id="client-body"></div>
+      </div>
+
+      <!-- GANTT PÚBLICO / SOLO LECTURA -->
+      <div id="page-gantt-public" class="page">
+        <!-- Rendered dynamically from ?gantt=ID -->
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL: AGREGAR CLIENTE -->
+  <div class="modal-overlay" id="add-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-building-circle-add"></i> Registrar Nuevo Cliente</h3>
+        <button class="btn-close-modal" onclick="closeAddModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <form id="new-client-form" onsubmit="event.preventDefault(); return saveNewClient();">
+        <div class="form-row full">
+          <div class="form-group">
+            <label for="new-nombre">Nombre del Cliente / Empresa *</label>
+            <input type="text" id="new-nombre" required placeholder="Ej: FRIGORÍFICO S.A.">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="new-tipo">Tipo de Cliente</label>
+            <div class="select-wrapper">
+              <select id="new-tipo">
+                <option value="Frigo">Frigo</option>
+                <option value="Ciclo II">Ciclo II</option>
+                <option value="Carniceria">Carnicería</option>
+                <option value="Usuario">Usuario</option>
+                <option value="Admin">Admin</option>
+                <option value="Frigo + Carni">Frigo + Carni</option>
+                <option value="Ciclo II + Carni">Ciclo II + Carni</option>
+                <option value="Todo">Todo</option>
+              </select>
+              <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="new-estado">Estado de Implementación</label>
+            <div class="select-wrapper">
+              <select id="new-estado">
+                <option value="Solicitar Info">Solicitar Info</option>
+                <option value="Armado de Base">Armado de Base</option>
+                <option value="Instalacion">Instalación</option>
+                <option value="Capacitacion">Capacitación</option>
+                <option value="Iniciado">Iniciado</option>
+                <option value="">Sin Estado</option>
+              </select>
+              <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="new-asignado">Asignar a (Principal)</label>
+            <div class="select-wrapper">
+              <select id="new-asignado">
+                <option value="">Sin Asignar</option>
+                <!-- Se cargan dinámicamente -->
+              </select>
+              <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="new-asignado-secundario">Asignar a (Secundario)</label>
+            <div class="select-wrapper">
+              <select id="new-asignado-secundario">
+                <option value="">Ninguno</option>
+                <!-- Se cargan dinámicamente -->
+              </select>
+              <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="new-arranque">Fecha de Arranque Pactada</label>
+            <input type="date" id="new-arranque">
+          </div>
+          
+          <div class="form-group">
+            <label for="new-notas">Notas / Observaciones Iniciales</label>
+            <input type="text" id="new-notas" placeholder="Ej: Requiere capacitación extendida...">
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn" onclick="closeAddModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Registrar Cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AGREGAR TAREA DESDE CALENDARIO -->
+  <div class="modal-overlay" id="calendar-task-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; width: 100%;">
+          <h3><i class="fa-solid fa-calendar-plus" id="cal-task-modal-icon"></i> <span id="cal-task-modal-title">Programar Nueva Tarea</span></h3>
+          <button type="button" class="btn btn-secondary btn-xs" id="cal-task-view-client-btn" onclick="window.navigateToClientFromCalendar()" style="display: none; margin-left: 16px; padding: 4px 8px; font-size: 11px; height: auto;">
+            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right: 4px;"></i> Ver Cliente
+          </button>
+        </div>
+        <button class="btn-close-modal" onclick="window.closeCalendarTaskModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <form id="calendar-task-form" onsubmit="event.preventDefault(); return window.saveCalendarTask();">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cal-task-client">Cliente *</label>
+            <div class="client-search-field">
+              <input type="text" id="cal-task-client-search" autocomplete="off" placeholder="Buscar cliente..." oninput="window.searchCalendarTaskClients()" onfocus="window.searchCalendarTaskClients()">
+              <input type="hidden" id="cal-task-client" required>
+              <div class="client-search-results" id="cal-task-client-results"></div>
+              <select id="cal-task-client-old" style="display:none">
+                <option value="">Seleccione un cliente...</option>
+                <!-- Se cargan dinámicamente -->
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="cal-task-tipo">Tipo *</label>
+            <div class="select-wrapper">
+              <select id="cal-task-tipo" required onchange="window.toggleCalendarTaskTypeFields()">
+                <option value="pedido" selected>Pedido</option>
+                <option value="capacitacion">Capacitación</option>
+                <option value="configuracion">Configuración</option>
+                <option value="visita">Visita</option>
+              </select>
+              <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          
+          <div class="form-group">
+            <label for="cal-task-date">Fecha de Pedido *</label>
+            <input type="date" id="cal-task-date" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cal-task-fecha-desde">Fecha desde *</label>
+            <input type="date" id="cal-task-fecha-desde" required>
+          </div>
+          <div class="form-group">
+            <label for="cal-task-fecha-hasta">Fecha hasta *</label>
+            <input type="date" id="cal-task-fecha-hasta" required>
+          </div>
+        </div>
+        
+        <div class="form-row full">
+          <div class="form-group">
+            <label for="cal-task-desc">Detalle de la Solicitud / Tarea *</label>
+            <textarea id="cal-task-desc" required placeholder="Ej: Configurar balanzas, capacitar al personal de expedición..."></textarea>
+          </div>
+        </div>
+        
+        <div class="form-row calendar-pedido-only">
+          <div class="form-group">
+            <label for="cal-task-who">Pedido por</label>
+            <input type="text" id="cal-task-who" placeholder="Ej: Juan Pérez">
+          </div>
+          
+          <div class="form-group">
+            <label for="cal-task-jira">Jira Ticket</label>
+            <input type="text" id="cal-task-jira" placeholder="Ej: SUP-123">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cal-task-asignado">Asignar a</label>
+            <div class="select-wrapper">
+              <select id="cal-task-asignado">
+                <option value="">Sin Asignar</option>
+                <!-- Se cargan dinámicamente -->
+              </select>
+              <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="cal-task-status">Estado de la Tarea</label>
+            <div class="select-wrapper">
+              <select id="cal-task-status">
+                <option value="Pendiente" selected>Pendiente</option>
+                <option value="En progreso">En progreso</option>
+                <option value="Resuelto">Resuelto</option>
+                <option value="Cancelado">Cancelado</option>
+              </select>
+              <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-danger" id="cal-task-delete-btn" onclick="window.deleteCalendarTask()" style="display: none; margin-right: auto;">
+            <i class="fa-solid fa-trash-can" style="margin-right: 4px;"></i> Eliminar
+          </button>
+          <button type="button" class="btn" onclick="window.closeCalendarTaskModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="cal-task-submit-btn">Programar Tarea</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- FLOATING BULK EDIT BAR -->
+  <div id="bulk-edit-bar" class="bulk-edit-bar leader-only">
+    <div class="bulk-edit-content">
+      <span class="bulk-selected-count">
+        <i class="fa-solid fa-square-check"></i>
+        <span id="bulk-count-text">0 seleccionados</span>
+      </span>
+      
+      <div class="bulk-divider"></div>
+      
+      <!-- Bulk Fields Form -->
+      <div class="bulk-fields">
+        <div class="bulk-field-group">
+          <label>Tipo</label>
+          <div class="select-wrapper">
+            <select id="bulk-tipo">
+              <option value="">(Sin cambios)</option>
+              <option value="Frigo">Frigo</option>
+              <option value="Ciclo II">Ciclo II</option>
+              <option value="Carniceria">Carnicería</option>
+              <option value="Usuario">Usuario</option>
+              <option value="Admin">Admin</option>
+              <option value="Frigo + Carni">Frigo + Carni</option>
+              <option value="Ciclo II + Carni">Ciclo II + Carni</option>
+              <option value="Todo">Todo</option>
+            </select>
+            <i class="fa-solid fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+        
+        <div class="bulk-field-group">
+          <label>Asignado</label>
+          <div class="select-wrapper">
+            <select id="bulk-asignado">
+              <option value="">(Sin cambios)</option>
+              <option value="UNASSIGN">(Desasignar)</option>
+              <!-- Creados dinámicamente -->
+            </select>
+            <i class="fa-solid fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+
+        <div class="bulk-field-group">
+          <label>Secundario</label>
+          <div class="select-wrapper">
+            <select id="bulk-asignado-secundario">
+              <option value="">(Sin cambios)</option>
+              <option value="UNASSIGN">(Desasignar)</option>
+              <!-- Creados dinámicamente -->
+            </select>
+            <i class="fa-solid fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+        
+        <div class="bulk-field-group">
+          <label>Estado</label>
+          <div class="select-wrapper">
+            <select id="bulk-estado">
+              <option value="">(Sin cambios)</option>
+              <option value="Solicitar Info">Solicitar Info</option>
+              <option value="Armado de Base">Armado de Base</option>
+              <option value="Instalacion">Instalación</option>
+              <option value="Capacitacion">Capacitación</option>
+              <option value="Iniciado">Iniciado</option>
+            </select>
+            <i class="fa-solid fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bulk-divider"></div>
+      
+      <div class="bulk-buttons">
+        <button class="btn btn-primary btn-sm" onclick="window.applyBulkEdit()">
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span>Aplicar</span>
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="window.clearSelection()">
+          <span>Cancelar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="toast-container leader-only"></div>
+
+  <!-- ENTRY POINT -->
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+</html>
